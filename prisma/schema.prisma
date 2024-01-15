@@ -10,9 +10,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Todo {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  text      String
-  completed Boolean
+model Post {
+  id String @id @default(uuid())
+  link String 
 }
