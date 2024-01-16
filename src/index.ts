@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import express from "express";
 import redis from "./lib/cache";
-import { json } from "body-parser";
 
 const prisma = new PrismaClient();
 
@@ -52,12 +51,32 @@ app.post("/post", async (req, res) => {
 });
 
 app.delete("/post/:id", async (req, res) => {
+  try{
   const id = req.params.id;
+
+  const existingPost = await prisma.post.findUnique({
+    where: { id },
+  });
+
+  if (!existingPost) {
+    return res.status(404).json({ error: "Post não encontrado." });
+  }
+
   await prisma.post.delete({
     where: { id },
   });
 
+  await prisma.post.delete({
+    where: { id },
+  });
+
+  redis.del(cacheKey);
+
   return res.send({ status: "ok" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao excluir o post." });
+  }
 });
 
 app.get("/", async (req, res) => {
