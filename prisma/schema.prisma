@@ -10,7 +10,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Post {
+model post {
   id String @id @default(uuid())
   link String 
 }
